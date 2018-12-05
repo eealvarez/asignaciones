@@ -1,0 +1,112 @@
+imports:
+    - { resource: parameters.yml }
+    - { resource: security.yml }
+    - { resource: services.yml }
+    - { resource: "@INFUNISAUserBundle/Resources/config/services.yml" }
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    locale: en
+
+framework:
+    #esi: ~
+    #translator: { fallbacks: ['%locale%'] }
+    translator: { fallbacks: [en] }
+    templating:
+        engines: ['twig']
+    secret: '%secret%'
+    router:
+        resource: '%kernel.project_dir%/app/config/routing.yml'
+        strict_requirements: ~
+    form: ~
+    csrf_protection: ~
+    validation: { enable_annotations: true }
+    #serializer: { enable_annotations: true }
+    #default_locale: '%locale%'
+    default_locale: es
+    trusted_hosts: ~
+    session:
+        # https://symfony.com/doc/current/reference/configuration/framework.html#handler-id
+        handler_id: session.handler.native_file
+        save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
+    fragments: ~
+    http_method_override: true
+    assets: ~
+    php_errors:
+        log: true
+
+# Twig Configuration
+twig:
+    debug: '%kernel.debug%'
+    strict_variables: '%kernel.debug%'
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        driver: pdo_mysql
+        host: '%database_host%'
+        port: '%database_port%'
+        dbname: '%database_name%'
+        user: '%database_user%'
+        password: '%database_password%'
+        charset: UTF8
+        # if using pdo_sqlite as your database driver:
+        #   1. add the path in parameters.yml
+        #     e.g. database_path: '%kernel.project_dir%/var/data/data.sqlite'
+        #   2. Uncomment database_path in parameters.yml.dist
+        #   3. Uncomment next line:
+        #path: '%database_path%'
+        mapping_types:
+            enum: string
+
+    orm:
+        auto_generate_proxy_classes: '%kernel.debug%'
+        naming_strategy: doctrine.orm.naming_strategy.underscore
+        auto_mapping: true
+
+# Swiftmailer Configuration
+swiftmailer:
+    transport: '%mailer_transport%'
+    host: '%mailer_host%'
+    username: '%mailer_user%'
+    password: '%mailer_password%'
+    spool: { type: memory }
+
+sensio_framework_extra:
+   router:
+        annotations: false
+        
+        # KnpPaginatorBundle
+knp_paginator:
+    page_range: 5                      # default page range used in pagination control
+    default_options:
+        page_name: page                # page query parameter name
+        sort_field_name: sort          # sort field query parameter name
+        sort_direction_name: direction # sort direction query parameter name
+        distinct: true                 # ensure distinct results, useful when ORM queries are using GROUP BY statements
+    template:
+        #pagination: KnpPaginatorBundle:Pagination:sliding.html.twig    # sliding pagination controls template ----- Este era el que venía por defecto
+        pagination: KnpPaginatorBundle:Pagination:twitter_bootstrap_v3_pagination.html.twig     # sliding pagination controls template ----- Esta va a utilizar nuestros estilos de Bootstrap para nuestra paginación
+        sortable: KnpPaginatorBundle:Pagination:sortable_link.html.twig # sort link template
+
+# Elasticsearch. A través de estos campos establecidos en mappings es que vamos a filtrar la búsqueda (firstName, lastName)
+fos_elastica:
+    clients:
+        default: { host: localhost, port: 9200 }
+    indexes:
+                    app:
+                            types: 
+                                        user:
+                                                    properties:
+                                                                        firstName: ~
+                                                                        lastName: ~                                                                             
+                                                    persistence:
+                                                                        # the driver can be orm, mongodb, phpcr or propel
+                                                                        # listener and finder are not supported by
+                                                                        # propel and should be removed
+                                                                        driver: orm
+                                                                        model: INFUNISA\UserBundle\Entity\User
+                                                                        provider: ~
+                                                                        listener: ~
+                                                                        finder: ~ 

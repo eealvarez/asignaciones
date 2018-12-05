@@ -1,0 +1,15 @@
+ {# esto es para AJAX para el botón Eliminar de la vista index #}
+{%  if flashMessage is not defined %}
+    <div class ="alert alert-danger hidden" id="message-danger" role="alert">
+        <div class="container">
+            <span id="user-message-danger"></span>
+        </div>
+    </div>
+{% endif  %}
+
+{# de lo contrario si existe la variable flashMessage, va a trabajar normalmente #}
+{% for flashMessage in app.session.flashbag.get('mensaje') %} {# flashMessage, el nombre del mensaje para mostrarlo en nuestra vista, es decir, almacenando el msj en esa variable #}
+        <div class="alert alert-danger" role="alert"> {#estilos de bootstrap#}
+            <div class="container">{{ flashMessage }}</div> {#Symfony para ostrar este tipo de msj está utilizando una sesión temporal, luego de refrescar la página se quita#}
+        </div>
+    {% endfor %}

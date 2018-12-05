@@ -1,0 +1,204 @@
+{% extends 'layout.html.twig' %}
+
+{% block body %}
+    {{ parent() }}
+
+    {#{% for flashMessage in app.session.flashbag.get('mensaje') %} {# flashMessage, el nombre del mensaje para mostrarlo en nuestra vista, es decir, almacenando el msj en esa variable #}
+    {#<div class="alert alert-success" role="alert"> {#estilos de bootstrap#}
+    {#<div class="container">{{ flashMessage }}</div> {#Symfony para ostrar este tipo de msj está utilizando una sesión temporal, luego de refrescar la página se quita#}
+    {#</div>#}
+    {#{% endfor %}#}
+
+    {# Progress bar, que es parte de Bootstrap para cargar un preloader #}
+    <div class="progress no-border hidden" id="delete-progress">    {#  con la clase hidden evitamos que aparezca de inmediato al inicio #}
+        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-voluemax="100" style="width: 100%">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
+    {{ include('INFUNISAUserBundle:User:messages/success.html.twig') }} {#include, importa archivos en este caso archivo twig. messages/ es un nuevo directorio y dentro el archivo twig#}
+    {{ include('INFUNISAUserBundle:User:messages/danger.html.twig') }}
+
+    <div class="container">
+        <div class="col-md-12">
+            <div class="page-header margin-none">
+                <h2 class="padding-none">{% trans %}Users{% endtrans %}</h2>
+            </div>
+            <div class="table-responsive">
+
+                {# esta línea era antes de usar AJAX para el botón Eliminar de la vista index #}
+                {#{% trans %}Total records:{% endtrans %} {{ pagination.getTotalItemCount }}#}
+                <p>
+                    {% trans %}Total records:{% endtrans %} <span id="total">{{ pagination.getTotalItemCount }}</span>
+                </p>
+                
+                {# Estructura y clases de Bootstrap para el siguiente fragmento de código que refeencia al campo de texto que es un nuevo formulario dentro de nuestra vista index para la búsqueda con ElasticSearch  #}
+
+                <form method="get" action="" class="form-inline" role="search">
+                    <div class="form-group">
+                        <input type="text" name="query" value="{{ app.request.get('query') }}" class="form-control" placeholder="{{'Search user'|trans}}" required />
+                    </div>
+                    <input type="submit" value="{{ 'Search'|trans }}" class="btn btn-default">
+                </form>
+                <br>					
+                {% if not pagination|length %}
+                    <h2>{{ 'No search results'|trans}}</h2>
+                {% endif %}
+
+                {% if pagination|length %}
+
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                {#
+                                
+                                TODO ESTA PORCIÓN DE CÓDIGO ESTABA ANTES DE USAR DQL CON DOCTRINE, UTILIZANDO KnpPaginatorBundle
+                                #}
+
+                                {#
+                                 <th>{{"Username"|trans}}</th> {#traduciendo texto por medio de filtros de twig#}
+
+                                {#
+                                 <th>{{"First name"|trans}}</th>
+                                 <th>{{"Last name"|trans}}</th>
+                                 <th>{{"Email"|trans}}</th>
+                                 <th>{{"Role"|trans}}</th>
+                                 <th>{{"Created"|trans}}</th>
+                                 <th>{{"Updated"|trans}}</th>
+                                 <th>{{"Actions"|trans}}</th>
+                                 
+    
+                                {#
+                                <th>{{"Username"}}</th> {#traduciendo texto por medio de filtros de twig#}  
+                                {#
+                                <th>{{"First name"}}</th>
+                                <th>{{"Last name"}}</th>
+                                <th>{{"Email"}}</th>
+                                <th>{{"Role"}}</th>
+                                <th>{{"Created"}}</th>
+                                <th>{{"Updated"}}</th>
+                                <th>{{"Actions"}}</th>
+                                #}
+
+
+                                <th>{{ knp_pagination_sortable(pagination, 'Username'|trans, 'u.username') }}</th> {# knp_pagination_sortable, aplica el orden ascendente o descendente, esa clasificación que utilizamos en la cabecera de nuestra página #}                            
+                                <th>{{ knp_pagination_sortable(pagination, 'First name'|trans, 'u.firstName') }}</th>
+                                <th>{{ knp_pagination_sortable(pagination, 'Last name'|trans, 'u.lastName') }}</th>
+                                <th>{{ knp_pagination_sortable(pagination, 'Email'|trans, 'u.email') }}</th>
+                                <th>{{ knp_pagination_sortable(pagination, 'Role'|trans, 'u.role') }}</th>
+                                <th>{{ knp_pagination_sortable(pagination, 'Created'|trans, 'u.createdAt') }}</th>
+                                <th>{{ knp_pagination_sortable(pagination, 'Updated'|trans, 'u.updatedAt') }}</th>
+                                <th>{{"Actions"|trans}}</th>
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in pagination %}
+                                <tr data-id=" {{ user.id }}">   {# data-id=" {{ user.id }}", esto es para poder usar AJAX en el botón Eliminar de la vista Index#}
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.firstName }}</td>
+                                    <td>{{ user.lastName }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>
+                                        {% if user.role == 'ROLE_ADMIN' %}
+                                            <strong>{% trans %}Administrator{% endtrans %}</strong>
+                                        {% elseif user.role == 'ROLE_USER' %}
+                                            <strong>{% trans %}User{% endtrans %}</strong>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ user.createdAt|date('d-m-Y H:i') }}</td>
+                                    <td>{{ user.updatedAt|date('d-m-Y H:i') }}</td>
+                                    <td class="actions">
+                                        <a href="{{ path('infunisa_user_view', { id: user.id }) }}" class="btn btn-sm btn-info">                                        
+                                            {{"View"|trans}}
+                                        </a>
+
+                                        <a href="{{ path('infunisa_user_edit', { id: user.id }) }}" class="btn btn-sm btn-primary">                                        
+                                            {{"Edit"|trans}}
+                                        </a>
+
+                                        <a href="#" class="btn btn-sm btn-danger btn-delete">   {# laclase llamada btn-delete es a la que vamos hacer referencia para trabajar con AJAX #}                                        
+                                            {{"Delete"|trans}}
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                        
+                    {% endif %} {#  endif del formulario de ElasticSearch que es código de Bootstrap #}
+                    
+                    {# display navigation ----- esto para mostrar los números de paginación #}
+                    <div class="navigation"> {#estilo de bootstrap #}
+                        {{ knp_pagination_render(pagination) }} {#método: knp_pagination_render, parámetro: pagination, que estamos llamando de nuestro controlador #}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        {{ include('INFUNISAUserBundle:User:forms/form.html.twig', { form: delete_form_ajax, message: 'Are you sure ?'|trans, id: 'form-delete', with_submit: false}) }}    {# esta lía es para trabajar con ajax en la vista index para el botón Eliminar #}
+
+        {% endblock %}
+
+            {% block javascripts %}
+
+                {{ parent() }}
+                <script src="{{ asset('bundles/infunisauser/js/delete-user.js') }}"></script> {# por enlace simbólico como se conoce en Symfony, hacemos la llamada de este archivo delete-user.js hacia nuestra carpeta web en los bundles que hace una réplica de lo que tenemos en la carpeta public dentro en Resources de nuestro bundle. Si en caso el enlace simbólico no trabaja por defecto entonces hay que ejecutar el siguiente comando desde la terminal directamente en nuestro directorio raíz: php bin/console assets:install --symlink, y lo que va a ser esto es crear dicho enlace simbólico para que actualice nuestra carpeta pública con la carpeta que se encuentra dentro del directorio web. Luego de ejecutar esta sentencia ya nos aparece la carpeta bundles dentro de la carpeta web que antes no aparecía #}
+
+            {% endblock %}
+
+
+
+
+
+            {#
+            
+            CÓDIGO INICIAL QUE SE ESCRIBIÓ EN ESTA PLANTILLA
+            
+            
+            {% extends 'layout.html.twig' %}
+            
+            {% block body %}
+            <h2>Users</h2>
+            
+            <table border="1">
+                <tr>
+                    <th>Username</th>
+                    <th>First name</th>
+                    <th>Last name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Created</th>
+                    <th>Updated</th>
+                    <th>Actions</th>
+                </tr>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.firstName }}</td>
+                        <td>{{ user.lastName }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            {% if user.role == 'ROLE_ADMIN' %}
+                                <strong>Administrator</strong>
+                            {% elseif user.role == 'ROLE_USER' %}
+                                <strong>User</strong>
+                            {% endif %}
+                        </td>
+                        <td>{{ user.createdAt|date('d-m-Y H:i') }}</td>
+                        <td>{{ user.updatedAt|date('d-m-Y H:i') }}</td>
+                        <td>
+                            <a href="#">View</a>
+                            <a href="#">Edit</a>
+                            <a href="#">Delete</a>
+                        </td>
+                    </tr>
+                    
+                {% endfor %}
+            </table>
+            
+            {% endblock %}
+            
+            #}

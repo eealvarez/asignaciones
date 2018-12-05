@@ -1,0 +1,61 @@
+{# {{ form_start(form) }}   ESTA LÍNEA FUE ANTES DE USAR AJAX PARA EL BOTÓN ELIMINAR DE LA VISTA INDEX #}
+
+{{ form_start(form, { 'attr': { 'id': id|default('form') } }) }}    {# esto es para usar ajax en el botón Eliminar de la vista index #}
+
+{{ form_widget(form) }}
+
+{#Esto fue inicialmente
+<input type="submit" value="{{ 'Delete user' | trans }}" class="btn btn-lg btn-block btn-danger" onclick="return confirm('Estás seguro ?')">    {# el btn-lg es para crear un botón largo #}
+
+{% if with_submit is not defined or with_submit == true %}  {# esto es, si mandamos a llamar el formulario desde la vista view va a validar que el submit sea igual a true y nos va a mostrar el botón, pero si mandamos a llamar el formulario desde nuestra vista index como estamos seteando el valor como false entonces no nos va a mostrar el botón porque esta condición no lo va a permitir #}
+
+<input type="button" value="{{ 'Delete user' | trans }}" class="btn btn-lg btn-block btn-danger" onclick="confirmDelete()">    {# el btn-lg es para crear un botón largo. Función de JavaScript = confirmDelete() #} 
+
+{%  endif %}
+
+{{ form_end(form) }}
+
+<script>
+    var message = '{{ message }}';
+
+    function confirmDelete()
+    {
+        
+        {# Gracias a Dios esto lo modifiqué basado con lo que dice en el sitio web: http://bootboxjs.com/examples.html #}
+        
+        bootbox.confirm({
+            message,
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result == true)
+                {
+                    document.form.submit();
+                }
+            }
+        });
+    }
+
+    {# ASÍ SE HIZO EN EL VIDEO CURSO DE SYMFONY2, PERO GRACIAS A DIOS, LO PERSONALICÉ DE LA FORMA QUE SE MUESTRA ARRIBA    
+    
+    function confirmDelete()
+    {
+        bootbox.confirm(message, function(result)
+        {
+            if(result == true)
+            {
+                document.form.submit();
+            }
+        });
+    }
+    #}
+
+</script>

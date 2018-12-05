@@ -1,0 +1,66 @@
+# To get started with security, check out the documentation:
+# https://symfony.com/doc/current/security.html
+security:
+
+    # https://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
+    providers:
+        #Así estaba originalmente, con estas 2 línas nada más este apartado de providers
+        #in_memory:
+            #memory: ~
+            
+            #Esto es para el módulo de autenticación de usuarios
+                our_db_provider:
+                        entity:
+                                class: INFUNISAUserBundle:User
+                                property: username
+
+    firewalls:
+        default:
+            anonymous: ~
+            http_basic: ~
+            form_login:
+                login_path: /login
+                check_path: /login_check        #ruta que maneja internamente Symfony a una ruta /login_check
+                # field names for the username and password fields:
+                username_parameter: _username
+                password_parameter: _password
+                # default_target_path: default_security_target
+                # always_use_default_target_path: true
+            logout:
+                path:   /logout
+                target: /login
+
+        # disables authentication for assets and the profiler, adapt it according to your needs
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            anonymous: ~
+            # activate different ways to authenticate
+
+            # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
+            #http_basic: ~
+
+            # https://symfony.com/doc/current/security/form_login_setup.html
+            #form_login: ~
+    encoders: #este es el valor llamado encoders
+        INFUNISA\UserBundle\Entity\User:
+            algorithm: bcrypt
+            cost: 12    #este campo definido llamado cost que se refiere al número de vueltas o al número de rondas que va a definir el algoritmo que va a definir nuestro password "hash"
+            
+    #AUTORIZACIÓN DE USUARIOS DENTRO DE SYMFONY
+    access_control:
+        #como path: ^/login es una vista puede acceder cualquier usuario incluso que no sea parte de nuestra aplicación, entonces cualquier usuario puede ingresar a esa ruta del login, es por eso el role: IS_AUTHENTICATED_ANONYMOUSLY
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        #path: ^/$, indica que cualquier otra ruta que acceda un usuario dentro de nuestra aplicación tiene que estar autenticado, es decir, roles: IS_AUTHENTICATED_FULLY
+        - { path: ^/$, roles: IS_AUTHENTICATED_FULLY }
+        #path: ^/user, la gestión de nuestros usuarios solo puede acceder nuestro Administrador
+        - { path: ^/user, roles: ROLE_ADMIN }
+        - { path: ^/task/index, roles: ROLE_ADMIN }
+        - { path: ^/task/add, roles: ROLE_ADMIN }
+        - { path: ^/task/edit, roles: ROLE_ADMIN }
+        - { path: ^/task/view, roles: [ROLE_ADMIN, ROLE_USER] }
+        - { path: ^/task/delete, roles: ROLE_ADMIN } 
+        - { path: ^/task/custom, roles: ROLE_USER } 
+        - { path: ^/task/process, roles: ROLE_USER }

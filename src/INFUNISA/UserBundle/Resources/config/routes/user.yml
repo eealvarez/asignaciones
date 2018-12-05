@@ -1,0 +1,49 @@
+infunisa_user_homepage:
+    path:     /hello/{name}
+    defaults: { _controller: INFUNISAUserBundle:Default:index }
+    
+infunisa_user_index:
+    path:       /index
+    defaults: {_controller: INFUNISAUserBundle:User:index }
+
+infunisa_user_add:
+    path:       /add
+    defaults: {_controller: INFUNISAUserBundle:User:add }
+    
+infunisa_user_create:
+    path:       /create
+    defaults: {_controller: INFUNISAUserBundle:User:create }
+    methods: POST
+    
+infunisa_user_update:
+    path:       /update/{id}
+    defaults: {_controller: INFUNISAUserBundle:User:update }
+    methods: [POST, PUT]
+    
+infunisa_user_edit:
+    path:       /edit/{id}
+    defaults: {_controller: INFUNISAUserBundle:User:edit }
+    
+infunisa_user_view:
+    path:       /view/{id}
+    defaults: {_controller: INFUNISAUserBundle:User:view }
+    
+infunisa_user_delete:
+    path:       /delete/{id}
+    defaults: {_controller: INFUNISAUserBundle:User:delete }
+    methods: [POST, DELETE]
+    
+infunisa_user_redirect_add:
+    path: /create
+    defaults:
+        _controller: INFUNISAUserBundle:User:add
+        path: /add
+        permanent: true
+
+#las siguientes líneas son para evitar que muestre el error: No route found for "GET /user/update/19": Method Not Allowed (Allow: POST, PUT), cuando se trata de actualizar la página web mientras se está actualizando los datos de un usuario:
+infunisa_user_redirect_edit:
+    path: /update/{id}
+    defaults:
+        _controller: INFUNISAUserBundle:User:edit
+        path: /edit/{id}
+        permanent: true

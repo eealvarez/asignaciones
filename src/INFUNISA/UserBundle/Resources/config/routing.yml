@@ -1,0 +1,24 @@
+infunisa_user_user:
+    resource: "@INFUNISAUserBundle/Resources/config/routes/user.yml"
+    prefix:   /user
+
+infunisa_task_task:
+    resource: "@INFUNISAUserBundle/Resources/config/routes/task.yml"
+    prefix: /task
+    
+# Autenticación de usuarios. La ruta home representa una vista cuando el usuario se autentique correctamente, el sistema nos redirigirá a una vista home de bienvenida
+    
+infunisa_user_homepage:
+    path:     /
+    defaults: { _controller: INFUNISAUserBundle:User:home } 
+
+infunisa_user_login:
+    path:     /login
+    defaults: { _controller: INFUNISAUserBundle:Security:login }
+
+infunisa_user_login_check:
+    path:     /login_check
+    defaults: { _controller: INFUNISAUserBundle:Security:loginCheck }
+
+infunisa_user_logout:
+    path: /logout

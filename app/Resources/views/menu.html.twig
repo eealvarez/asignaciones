@@ -1,0 +1,50 @@
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">{% trans %}Assignments{% endtrans %}</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                {# Esto para ocultar los menús de Usuarios y Tareas en el menú principal para un usuario con privilegios normales que no tenga acceso a los mismos #}
+                {% if is_granted('ROLE_ADMIN') %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans %}Users{% endtrans %}<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ path('infunisa_user_index') }}">{% trans %}List users{% endtrans %}</a></li>
+                            <li><a href="{{ path('infunisa_user_add') }}">{% trans %}New user{% endtrans %}</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans %}Tasks{% endtrans %}<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ path('infunisa_task_index') }}">{% trans %}List tasks{% endtrans %}</a></li>
+                            <li><a href="{{ path('infunisa_task_add') }}">{% trans %}New task{% endtrans %}</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
+
+                {# Esto para que los usuarios puedan acceder a sus propias tareas por medio de la ruta /task/custom #}
+                {% if is_granted('ROLE_USER') %}
+                    <li>
+                        <a href="{{ path('infunisa_task_custom') }}">{{ 'My tasks'|trans }}</a>
+                    </li>
+                {% endif %}
+            </ul>
+            {# esto es para la opción de cerrar la sesión de un usuario autenticado #}
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="{{ path('infunisa_user_logout') }}">{{ 'Logout'|trans }}</a>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>

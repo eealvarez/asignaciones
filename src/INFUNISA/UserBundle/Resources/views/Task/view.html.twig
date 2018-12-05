@@ -1,0 +1,65 @@
+{% extends 'layout.html.twig' %}
+
+{% block body %}
+    {{ parent() }}
+    <div class="container well">
+        <div class="col-md-9">
+            <h2>{{ task.title }}</h2>
+            <br>
+            <dl>
+                <dt>{{ 'Description'|trans }}</dt>
+                <dd>
+                    {{ task.description }}
+                    &nbsp;
+                </dd>
+                <br>
+
+                <dt>{{ 'User'|trans }}</dt>
+                <dd>
+                    {{ user.fullName }}
+                    &nbsp;
+                </dd>
+                <br>
+
+                <dt>{{ 'Status'|trans }}</dt>
+                <dd>
+                    {% if task.status == 0 %}
+                        <span class="text-danger">{{ 'Waiting'|trans }}</span>      {# la clase "text-danger" coloca de color rojo el texto #}
+                    {% elseif task.status == 1 %}
+                        <span class="text-success">{{ 'Finish'|trans }}</span>
+                    {% endif %}
+                    &nbsp;
+                </dd>
+                <br>
+
+                <dt>{{ 'Created'|trans }}</dt>
+                <dd>
+                    {{ task.createdAt|date('d-m-Y H:i') }}
+                    &nbsp;
+                </dd>
+                <br>
+
+                <dt>{{ 'Updated'|trans }}</dt>
+                <dd>
+                    {{ task.updatedAt|date('d-m-Y H:i') }}
+                    &nbsp;
+                </dd>
+                <br>
+            </dl>
+        </div>
+        {% if is_granted('ROLE_ADMIN') %}
+            <div class="col-md-3">      {# columna de 3, esta ya es una clase de bootstrap #}
+                <h3>{{ 'Actions'|trans }}:</h3>
+                <p>
+                    <a href="{{ path('infunisa_task_edit', {id: task.id}) }}" class="btn btn-primary btn-lg btn-block">     {# estilo: primary = para editar el texto; btn-block para botón de bloque #}
+                        <span class="glyphicon glyphicon-edit"></span>      {# glyphicon-edit, para que coloque un ícono de lápiz #}
+                        {{ 'Edit task'|trans }}
+                    </a>
+                </p>
+                <p>
+                    {{ include('INFUNISAUserBundle:Task:forms/form.html.twig', { form: delete_form, message: 'Are you sure ?'|trans }) }}
+                </p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

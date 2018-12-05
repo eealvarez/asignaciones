@@ -1,0 +1,7 @@
+infunisa_user:
+    resource: "@INFUNISAUserBundle/Resources/config/routing.yml"
+    prefix:   /
+
+app:
+    resource: '@AppBundle/Controller/'
+    type: annotation

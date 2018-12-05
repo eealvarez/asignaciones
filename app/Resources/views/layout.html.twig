@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}ASIGNACIÓN DE TAREAS{% endblock %}</title>
+        {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('public/css/bootstrap.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('public/css/style.css') }}" />
+        {% endblock %}
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    </head>
+    <body>
+        {% block body %}
+            {# antes del módulo de seguridad de autenticación de usuarios, solo se tenía esta línea #}
+            {# {{ include('menu.html.twig') }} #}
+            {# pero ahora con el módulo de seguridad de autenticación de usuarios, queda así: #}
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}	{#el método is_granted que define los respectivos accesos que tienen nuestros usuarios autenticados, y la llave IS_AUTHENTICATED_FULLY que representa que un usuario está autenticado #}
+	{{ include('menu.html.twig') }}
+            {% endif %}
+        {% endblock %}
+        {% block javascripts %}
+            <script src="{{ asset('public/js/jquery-1.11.3.min.js') }}"></script>
+            <script src="{{ asset('public/js/bootstrap.min.js') }}"></script>
+            <script src="{{ asset('public/js/bootbox.min.js') }}"></script>
+        {% endblock %}
+    </body>
+</html>

@@ -1,0 +1,53 @@
+infunisa_task_index:
+    path:     /index
+    defaults: { _controller: INFUNISAUserBundle:Task:index }
+
+infunisa_task_add:
+    path:     /add
+    defaults: { _controller: INFUNISAUserBundle:Task:add }
+
+infunisa_task_create:
+    path:     /create
+    defaults: { _controller: INFUNISAUserBundle:Task:create }
+    methods:  POST
+
+infunisa_task_edit:
+    path:     /edit/{id}
+    defaults: { _controller: INFUNISAUserBundle:Task:edit }
+
+infunisa_task_update:
+    path:     /update/{id}
+    defaults: { _controller: INFUNISAUserBundle:Task:update }
+    methods:  [POST, PUT]
+
+infunisa_task_view:
+    path:     /view/{id}
+    defaults: { _controller: INFUNISAUserBundle:Task:view }
+
+infunisa_task_delete:
+    path:     /delete/{id}
+    defaults: { _controller: INFUNISAUserBundle:Task:delete }
+    methods:  [POST, DELETE]
+
+infunisa_task_redirect_add:
+    path: /create
+    defaults:
+        _controller: INFUNISAUserBundle:Task:add
+        path: /add
+        permanent: true
+
+infunisa_task_custom:
+    path:     /custom
+    defaults: { _controller: INFUNISAUserBundle:Task:custom }
+    
+infunisa_task_process:
+    path:     /process/{id}
+    defaults: { _controller: INFUNISAUserBundle:Task:process }
+    methods:  [POST, PUT]    
+
+infunisa_task_redirect_edit:
+    path: /update/{id}
+    defaults:
+        _controller: INFUNISAUserBundle:Task:edit
+        path: /edit/{id}
+        permanent: true
